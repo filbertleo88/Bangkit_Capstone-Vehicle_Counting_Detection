@@ -88,6 +88,7 @@ while True:
                 cvzone.putTextRect(img, f"{int(id)} {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
                                    offset=5, colorR=color)
                 currentArray = np.array([x1, y1, x2, y2, conf])
+                print(currentArray)
                 detections = np.vstack((detections, currentArray))
 
     resultsTracker = tracker.update(detections)
@@ -96,7 +97,6 @@ while True:
     cv2.line(img, (limits[0], limits[1]), (limits[2], limits[3]), (0, 0, 255), 5)
     cv2.line(img, (limits1[0], limits1[1]), (limits1[2], limits1[3]), (0, 0, 255), 5)
 
-   
 
     for results in resultsTracker:
         x1, y1, x2, y2, id = results
@@ -137,8 +137,6 @@ while True:
     with open(output_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['Masuk', 'Keluar', 'Total'])
-        # totalCount.insert(0,"Masuk")
-        # totalCount1.insert(0,"Keluar")
         writer.writerow([str(len(totalCount)),str(len(totalCount1)),str(50-int(len(totalCount))+int(len(totalCount1)))])
 
     csvfile.close()

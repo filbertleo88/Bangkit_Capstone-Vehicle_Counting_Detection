@@ -4,72 +4,45 @@ import cv2
 import cvzone
 import math
 from sort import *
+import csv
 
-from openpyxl import Workbook
-from datetime import datetime
-
-cap = cv2.VideoCapture("videos/cars.mp4")  # For Video
+cap = cv2.VideoCapture("videos/test3.mp4")  # For Video
+# cap = cv2.VideoCapture(0) 
 
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
-start_time = datetime.now()
-last_time = datetime.now()
-
-config = {'save_video': False,
-          'text_overlay': True,
-          'object_overlay': True,
-          'object_id_overlay': False,
-          'object_detection': True,
-          'min_area_motion_contour': 60,
-          'park_sec_to_wait': 0.001,
-          'start_frame': 0}  # 35000
-ct = 0
-total_output = 0
-fastest = 0
-ppm = 0
-ppm_average = 0
-
-# record counting every a qty
-rec_qty = 8
-qty = 0
-
-# prepare for excel file
-path = "../output/"
-wb = Workbook()
-ws = wb.active
-ws.append(("datetime", "total_output", "minute", "id"))
-
-
-model = YOLO("models/yolov8x.pt")
+# model = YOLO("models/yolov8x.pt")
 ## Custom dataset
-# model = YOLO("models/best.pt")
+model = YOLO("models/custom.pt")
 
-classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
-              "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
-              "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
-              "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat",
-              "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
-              "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli",
-              "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed",
-              "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone",
-              "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
-              "teddy bear", "hair drier", "toothbrush"
-  ]
+# classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
+#               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
+#               "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
+#               "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat",
+#               "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
+#               "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli",
+#               "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed",
+#               "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone",
+#               "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
+#               "teddy bear", "hair drier", "toothbrush"
+# ]
 ## Custom classes
-# classNames=["bus", "car", "motorbike", "truck"]
+classNames=["big bus", "big truck", "bus-l-", "bus-s-", "car", "mid truck", "small bus", "small truck",
+            "truck-l-", "truck-m-", "truck-s-", "truck-xl-"]
 
 # Tracking
 tracker = Sort(max_age=20, min_hits=3, iou_threshold=0.3)
 
 # Line
 limits = [30, 550, 568, 550]
-limits1 = [680, 350, 943, 350]
+limits1 = [680, 450, 1300, 450]
 
 # Counter
 totalCount = []
 totalCount1 = []
 # count = 0
+
 
 while True:
     success, img = cap.read()
@@ -113,27 +86,6 @@ while True:
                 # cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
                 # cvzone.putTextRect(img, f"      {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
                 #                    offset=5, colorR=color)
-                qty = qty + 1
-                total_output = total_output + 1
-                current_time = datetime.now()
-                diff = current_time - last_time
-                ct = diff.total_seconds()
-                last_time = current_time
-
-                diff = current_time - start_time
-                minutes = diff.total_seconds() / 60
-
-                data = (current_time, total_output, minutes, id)
-                ws.append(data)
-
-                print(ws)
-
-                if (qty > rec_qty):
-                    # record to excel
-                    data = (current_time, total_output, minutes, id)
-                    ws.append(data)
-                    qty = 0
-
                 cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
                 cvzone.putTextRect(img, f"{int(id)} {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
                                    offset=5, colorR=color)
@@ -145,6 +97,7 @@ while True:
 
     cv2.line(img, (limits[0], limits[1]), (limits[2], limits[3]), (0, 0, 255), 5)
     cv2.line(img, (limits1[0], limits1[1]), (limits1[2], limits1[3]), (0, 0, 255), 5)
+
 
     for results in resultsTracker:
         x1, y1, x2, y2, id = results
@@ -178,9 +131,15 @@ while True:
     cv2.putText(img, f"vehicle up:{str(len(totalCount))}", (100, 100), cv2.FONT_HERSHEY_PLAIN, 2, (50, 50, 255), 3)
     cv2.putText(img, f"vehicle down:{str(len(totalCount1))}",(800,100),cv2.FONT_HERSHEY_PLAIN,2,(50,50,255),3)
 
-    print("Up:"+str(len(totalCount)))
-    print("Down"+str(len(totalCount1)))
+    # print("Up:"+str(len(totalCount)))
+    # print("Down"+str(len(totalCount1)))
 
+    output_file = 'output.csv'
+    with open(output_file, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Masuk', 'Keluar', 'Total'])
+        writer.writerow([str(len(totalCount)),str(len(totalCount1)),str(50-int(len(totalCount))+int(len(totalCount1)))])
+    csvfile.close()
 
     cv2.imshow("Image", img)
     # cv2.imshow("ImageRegion", imgRegion)
