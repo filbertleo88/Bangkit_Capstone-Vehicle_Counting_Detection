@@ -6,15 +6,15 @@ import math
 from sort import *
 import csv
 
-cap = cv2.VideoCapture("videos/test3.mp4")  # For Video
-# cap = cv2.VideoCapture(0) 
+cap = cv2.VideoCapture("videos/cctv.mp4")  # For Video
+# cap = cv2.VideoCapture(1)
 
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
 # model = YOLO("models/yolov8x.pt")
 ## Custom dataset
-model = YOLO("models/custom.pt")
+model = YOLO("models/custom1.pt")
 
 # classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
 #               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
@@ -72,23 +72,24 @@ while True:
 
             if currentClass == 'car':
                 color = (0, 204, 255)
-                id=1
+                # id=1
             elif currentClass == "bus":
                 color = (222, 82, 175)
-                id = 2
+                # id = 2
             elif currentClass == "truck":
                 color = (0, 149, 255)
-                id = 3
+                # id = 3
             else:
                 color = (85, 45, 255)
 
-            if currentClass == "car" or currentClass == "truck" or currentClass == "bus" or currentClass == "motorbike" and conf > 0.3:
-                # cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
-                # cvzone.putTextRect(img, f"      {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
-                #                    offset=5, colorR=color)
+            # if currentClass == "car" or currentClass == "truck" or currentClass == "bus" or currentClass == "motorbike" and conf > 0.3:
+            if currentClass in classNames and conf > 0.4:
                 cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
-                cvzone.putTextRect(img, f"{int(id)} {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
+                cvzone.putTextRect(img, f"{label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
                                    offset=5, colorR=color)
+                # cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
+                # cvzone.putTextRect(img, f"{int(id)} {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
+                #                    offset=5, colorR=color)
                 currentArray = np.array([x1, y1, x2, y2, conf])
                 detections = np.vstack((detections, currentArray))
 
@@ -102,7 +103,7 @@ while True:
     for results in resultsTracker:
         x1, y1, x2, y2, id = results
         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-        # print(results)
+        print(results)
         # print(id)
         w, h = x2 - x1, y2 - y1
 
