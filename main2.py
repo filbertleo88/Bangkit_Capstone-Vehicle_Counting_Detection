@@ -5,8 +5,9 @@ import cvzone
 import math
 from sort import *
 import csv
+from firebase import firebase
 
-cap = cv2.VideoCapture("videos/cctv.mp4")  # For Video
+cap = cv2.VideoCapture("videos/test1.mp4")  # For Video
 # cap = cv2.VideoCapture(1)
 
 frame_width = int(cap.get(3))
@@ -43,6 +44,8 @@ totalCount = []
 totalCount1 = []
 # count = 0
 
+capacity = input("Enter rest area capacity: ")
+# firebase =firebase.FirebaseApplication('https://capstone-project-1fe95-default-rtdb.firebaseio.com/',None)
 
 while True:
     success, img = cap.read()
@@ -103,7 +106,7 @@ while True:
     for results in resultsTracker:
         x1, y1, x2, y2, id = results
         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-        print(results)
+        # print(results)
         # print(id)
         w, h = x2 - x1, y2 - y1
 
@@ -129,19 +132,29 @@ while True:
 
     # cvzone.putTextRect(img, f"Count: {len(totalCount)}", (50, 50))
 
-    cv2.putText(img, f"vehicle up:{str(len(totalCount))}", (100, 100), cv2.FONT_HERSHEY_PLAIN, 2, (50, 50, 255), 3)
-    cv2.putText(img, f"vehicle down:{str(len(totalCount1))}",(800,100),cv2.FONT_HERSHEY_PLAIN,2,(50,50,255),3)
+    total_vehicle_in = str(len(totalCount))
+    total_vehicle_out = str(len(totalCount1))
+    total_capacity = int(capacity) - int(total_vehicle_in) + int(total_vehicle_out)
 
-    # print("Up:"+str(len(totalCount)))
-    # print("Down"+str(len(totalCount1)))
+    cv2.putText(img, f"vehicle in: {total_vehicle_in}", (100, 100), cv2.FONT_HERSHEY_PLAIN, 2, (50, 50, 255), 3)
+    cv2.putText(img, f"vehicle out: {total_vehicle_out}",(800,100),cv2.FONT_HERSHEY_PLAIN,2,(50,50,255),3)
 
+    print("In:"+total_vehicle_in)
+    print("Out"+total_vehicle_out)
+
+    # CSV
     output_file = 'output.csv'
     with open(output_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['Masuk', 'Keluar', 'Total'])
-        writer.writerow([str(len(totalCount)),str(len(totalCount1)),str(50-int(len(totalCount))+int(len(totalCount1)))])
+        writer.writerow(['In', 'Out', 'Capacity'])
+        writer.writerow([total_vehicle_in,total_vehicle_out,total_capacity])
     csvfile.close()
 
     cv2.imshow("Image", img)
     # cv2.imshow("ImageRegion", imgRegion)
     cv2.waitKey(1)
+
+    # # Firebase
+    # result=firebase.put('/count','capacity',int(total_capacity))
+    # result=firebase.put('/count','in',int(total_vehicle_in))
+    # result=firebase.put('/count','out',int(total_vehicle_out))
