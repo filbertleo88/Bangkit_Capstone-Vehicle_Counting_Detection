@@ -45,7 +45,7 @@ totalCount1 = []
 # count = 0
 
 capacity = input("Enter rest area capacity: ")
-# firebase =firebase.FirebaseApplication('https://capstone-project-1fe95-default-rtdb.firebaseio.com/',None)
+# firebase =firebase.FirebaseApplication('https://interstate-now-default-rtdb.asia-southeast1.firebasedatabase.app/',None)
 
 while True:
     success, img = cap.read()
@@ -75,24 +75,20 @@ while True:
 
             if currentClass == 'car':
                 color = (0, 204, 255)
-                # id=1
-            elif currentClass == "bus":
+            elif currentClass == "big bus" or currentClass == "bus-l-" or currentClass == "bus-s-"\
+                  or currentClass == "small bus":
                 color = (222, 82, 175)
-                # id = 2
-            elif currentClass == "truck":
+            elif currentClass == "big truck" or currentClass == "mid truck" or currentClass == "big bus"\
+                  or currentClass == "small truck" or currentClass == "truck-l-" or currentClass == "truck-m-"\
+                    or currentClass == "truck-s-" or currentClass == "truck-xl-":
                 color = (0, 149, 255)
-                # id = 3
             else:
-                color = (85, 45, 255)
+                color = (255, 255, 255)
 
-            # if currentClass == "car" or currentClass == "truck" or currentClass == "bus" or currentClass == "motorbike" and conf > 0.3:
             if currentClass in classNames and conf > 0.4:
                 cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
                 cvzone.putTextRect(img, f"{label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
                                    offset=5, colorR=color)
-                # cvzone.cornerRect(img, (x1, y1, w, h), l=7, rt=5, colorR=color)
-                # cvzone.putTextRect(img, f"{int(id)} {label} ", (max(0, x1), max(35, y1)), scale=1, thickness=2,
-                #                    offset=5, colorR=color)
                 currentArray = np.array([x1, y1, x2, y2, conf])
                 detections = np.vstack((detections, currentArray))
 
@@ -151,7 +147,6 @@ while True:
     csvfile.close()
 
     cv2.imshow("Image", img)
-    # cv2.imshow("ImageRegion", imgRegion)
     cv2.waitKey(1)
 
     # # Firebase
