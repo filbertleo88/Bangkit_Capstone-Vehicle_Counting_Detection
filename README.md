@@ -47,6 +47,6 @@ Setelah mengolah data tersebut, langkah terakhir adalah menyimpannya ke dalam be
 
 Data yang telah disimpan ke dalam CSV dan Realtime Database dapat kemudian diolah lagi untuk dibuatkan grafik yang akan ditampilkan di dalam aplikasi mobile Android. Grafik ini akan memberikan visualisasi yang lebih mudah dipahami tentang jumlah kendaraan masuk, keluar, dan kapasitas rest area dalam rentang waktu tertentu. 
 
-![Python Program](C:\Users\Filbert\OneDrive\Documents\Filbert\Bangkit 2023\Capstone Project\Vehicle_YOLOv8\image\cctv.jpg)
+![Python Program]("C:\Users\Filbert\OneDrive\Documents\Filbert\Bangkit 2023\Capstone Project\Vehicle_YOLOv8\image\cctv.jpg")
 ![CSV Output]()
 ![Realtime Database Output]()
